@@ -47,5 +47,4 @@ function doClaimToken(token) {
         },
         "x-www-form-urlencoded"
     );
-    // console.log("proxy=" + HTTP_PROXY);
 }

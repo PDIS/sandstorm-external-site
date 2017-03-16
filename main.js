@@ -79,22 +79,23 @@ function claimToken(request, response) {
 }
 
 function saveAccessToken(token, response) {
+    console.log("proxy="+process.env.HTTP_PROXY);
     doRequest({
         proxy: process.env.HTTP_PROXY,
         method: "GET",
         headers: {
             "Authorization": "Bearer " + token
         },
-        url: "http://www.dmm.com/netgame/"
+        url: "http://www.dmm.com/"
     }, function (err, httpResponse, body) {
         if (err) {
-            response.writeHead(500);
             console.error("Error: "+err);
+            // response.writeHead(500);
         } else {
             console.log("Body: " + body);
-            response.writeHead(200);
-            response.write(body);
+            // response.writeHead(200);
+            // response.write(body);
         }
-        response.end();
+        // response.end();
     });
 }
