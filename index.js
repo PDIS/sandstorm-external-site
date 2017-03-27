@@ -1,8 +1,12 @@
+const KEY = 'EA5QAQEAABEBF1EEAQH/x80lxnnjecgAQAMxCSIBAAH/aHR0cHM6Ly8DcG9sLmlzL2FwaS92My9jb252ZXJzYXRpB29ucw==';
+
 window.parent.postMessage({
     powerboxRequest: {
         rpcId: 1,
         query: [
-            "EAtQAQEAABEBF1EEAQH/x80lxnnjecgAQAMRCYIAAf9odHRwOi8vZAFtbS5jb20vAA=="
+            "EAtQAQEAABEBF1EEAQH/x80lxnnjecgAQAMRCYIAAf9odHRwczovLwFwb2wuaXMvAA==" // pol.is
+            , "EAxQAQEAABEBF1EEAQH/x80lxnnjecgAQAMRCaIAAf9odHRwOi8vdwF3dy5kbW0uYwdvbS8=" // www.dmm.com
+            , "EAxQAQEAABEBF1EEAQH/x80lxnnjecgAQAMRCbIAAf9odHRwczovLwF0dy55YWhvbx8uY29tLw==" // tw.yahoo.com
         ],
         saveLabel: {defaultText: "your calendar, for adding events"},
     }
@@ -40,12 +44,9 @@ window.addEventListener("message", function (event) {
 });
 
 function doClaimToken(token) {
-    $.post('/claimToken',
+    $('html').load('/claimToken',
         {"requestToken": token, "requiredPermissions": ["read"]},
-        function (response) {
-            console.log("resp:" + response);
-        },
+        function (response) {},
         "x-www-form-urlencoded"
     );
-    // console.log("proxy=" + HTTP_PROXY);
 }
