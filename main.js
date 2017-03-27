@@ -86,9 +86,10 @@ function saveAccessToken(token, response) {
             proxy: process.env.HTTP_PROXY,
             method: "GET",
             headers: {
-                "Authorization": "Bearer " + token
+                "Authorization": "Bearer " + token,
             },
-            url: "http://pol.is/api/v3/conversations"
+            url: "http://hostname/"
+            // url: "http://hostname/api/v3/conversations"
             // url: "http://tw.yahoo.com/"
         }
     ).on('response', function (resp) {
