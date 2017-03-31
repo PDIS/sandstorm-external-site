@@ -7,18 +7,20 @@ var http = require("http"),
     port = 8000;
 
 http.createServer(function (request, response) {
-    console.log(request.method + " " + request.url);
 
-    var uri = url.parse(request.url).pathname
-        , filename = path.join(process.cwd(), uri);
+    console.log(request.method + " " + request.url);
 
     if (request.url === '/claimToken') {
         claimToken(request, response);
         return;
     }
 
+    var uri = url.parse(request.url).pathname
+        , filename = path.join(process.cwd(), uri);
+
     fs.exists(filename, function (exists) {
         if (!exists) {
+            console.log("File not found");
             response.writeHead(404, {"Content-Type": "text/plain"});
             response.write("404 Not Found\n");
             response.end();
@@ -54,7 +56,6 @@ function claimToken(request, response) {
         if (body.length > 1e6)
             request.connection.destroy();
     });
-
     request.on('end', function () {
         var post = qs.parse(body);
         var claimToken = post.requestToken;
@@ -81,29 +82,36 @@ function claimToken(request, response) {
 
 function saveAccessToken(token, response) {
     var body = [];
-    // Don't use https here, just http. No security issue.
-    var request = doRequest({
-        proxy: process.env.HTTP_PROXY,
-        method: "GET",
-        headers: {
-            "Authorization": "Bearer " + token
-        },
-        // url: "http://tw.yahoo.com/"
-        url: "http://pol.is/api/v3/conversations"
-    });
-    request.on('data', function(chunk) {
+    doRequest({
+            proxy: process.env.HTTP_PROXY,
+            method: "GET",
+            headers: {
+                "Authorization": "Bearer " + token,
+            },
+            url: "http://hostname/"
+            // url: "http://hostname/api/v3/conversations"
+            // url: "http://tw.yahoo.com/"
+        }
+    ).on('response', function (resp) {
+        // console.log("resp=" + resp);
+        // for (var key in resp) {
+        //     if (typeof  resp[key] !== "function") {
+        //         console.log(key + ": " + resp[key]);
+        //     }
+        // }
+    }).on('error', function (err) {
+        // console.log("error=" + err);
+        response.writeHead(200, {"Content-Type": "text/html"});
+        // response.writeHead(500, {"Content-Type": "text/html"});
+        response.write("Error:<br>" + err);
+        response.end();
+    }).on('data', function (chunk) {
         body.push(chunk);
-    }).on('end', function() {
+    }).on('end', function () {
         body = Buffer.concat(body).toString();
+        // console.log("Body: " + body);
         response.writeHead(200, {"Content-Type": "text/html"});
         response.write(body);
-        response.end();
-    }).on('response', function(res) {
-        // console.log("Response " + res.statusCode);
-    }).on('error', function (err) {
-        console.log("Error\n" + err);
-        response.writeHead(200, {"Content-Type": "text/html"});
-        response.write(err.toString());
         response.end();
     });
 }

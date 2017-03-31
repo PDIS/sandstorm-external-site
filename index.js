@@ -1,16 +1,18 @@
+const KEY = 'EA5QAQEAABEBF1EEAQH/x80lxnnjecgAQAMxCSIBAAH/aHR0cHM6Ly8DcG9sLmlzL2FwaS92My9jb252ZXJzYXRpB29ucw==';
+
 window.parent.postMessage({
     powerboxRequest: {
         rpcId: 1,
         query: [
-            "EAtQAQEAABEBF1EEAQH/x80lxnnjecgAQAMRCYIAAf9odHRwczovLwFwb2wuaXMvAA==" // https://polis.is/
-            ,"EAtQAQEAABEBF1EEAQH/x80lxnnjecgAQAMRCYIAAf9odHRwOi8vZAFtbS5jb20vAA=="
-            ,"EAxQAQEAABEBF1EEAQH/x80lxnnjecgAQAMRCbIAAf9odHRwczovLwF0dy55YWhvbx8uY29tLw==" // https://tw.yahoo.com
+            "EAtQAQEAABEBF1EEAQH/x80lxnnjecgAQAMRCYIAAf9odHRwczovLwFwb2wuaXMvAA==" // pol.is
+            , "EAxQAQEAABEBF1EEAQH/x80lxnnjecgAQAMRCaIAAf9odHRwOi8vdwF3dy5kbW0uYwdvbS8=" // www.dmm.com
+            , "EAxQAQEAABEBF1EEAQH/x80lxnnjecgAQAMRCbIAAf9odHRwczovLwF0dy55YWhvbx8uY29tLw==" // tw.yahoo.com
         ],
         saveLabel: {defaultText: "your calendar, for adding events"},
     }
 }, "*");
 
-window.addEventListener("message", function (event) {3
+window.addEventListener("message", function (event) {
     if (event.source !== window.parent) {
         // SECURITY: ignore postMessages that didn't come from the parent frame.
         return;
@@ -44,8 +46,7 @@ window.addEventListener("message", function (event) {3
 function doClaimToken(token) {
     $('html').load('/claimToken',
         {"requestToken": token, "requiredPermissions": ["read"]},
-        function (response) {
-        },
+        function (response) {},
         "x-www-form-urlencoded"
     );
 }
