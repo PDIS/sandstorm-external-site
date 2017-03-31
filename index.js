@@ -2,13 +2,15 @@ window.parent.postMessage({
     powerboxRequest: {
         rpcId: 1,
         query: [
-            "EAtQAQEAABEBF1EEAQH/x80lxnnjecgAQAMRCYIAAf9odHRwOi8vZAFtbS5jb20vAA=="
+            "EAtQAQEAABEBF1EEAQH/x80lxnnjecgAQAMRCYIAAf9odHRwczovLwFwb2wuaXMvAA==" // https://polis.is/
+            ,"EAtQAQEAABEBF1EEAQH/x80lxnnjecgAQAMRCYIAAf9odHRwOi8vZAFtbS5jb20vAA=="
+            ,"EAxQAQEAABEBF1EEAQH/x80lxnnjecgAQAMRCbIAAf9odHRwczovLwF0dy55YWhvbx8uY29tLw==" // https://tw.yahoo.com
         ],
         saveLabel: {defaultText: "your calendar, for adding events"},
     }
 }, "*");
 
-window.addEventListener("message", function (event) {
+window.addEventListener("message", function (event) {3
     if (event.source !== window.parent) {
         // SECURITY: ignore postMessages that didn't come from the parent frame.
         return;
@@ -40,10 +42,9 @@ window.addEventListener("message", function (event) {
 });
 
 function doClaimToken(token) {
-    $.post('/claimToken',
+    $('html').load('/claimToken',
         {"requestToken": token, "requiredPermissions": ["read"]},
         function (response) {
-            console.log("resp:" + response);
         },
         "x-www-form-urlencoded"
     );

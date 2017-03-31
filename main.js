@@ -7,6 +7,7 @@ var http = require("http"),
     port = 8000;
 
 http.createServer(function (request, response) {
+    console.log(request.method + " " + request.url);
 
     var uri = url.parse(request.url).pathname
         , filename = path.join(process.cwd(), uri);
@@ -79,23 +80,30 @@ function claimToken(request, response) {
 }
 
 function saveAccessToken(token, response) {
-    console.log("proxy="+process.env.HTTP_PROXY);
-    doRequest({
+    var body = [];
+    // Don't use https here, just http. No security issue.
+    var request = doRequest({
         proxy: process.env.HTTP_PROXY,
         method: "GET",
         headers: {
             "Authorization": "Bearer " + token
         },
-        url: "http://www.dmm.com/"
-    }, function (err, httpResponse, body) {
-        if (err) {
-            console.error("Error: "+err);
-            // response.writeHead(500);
-        } else {
-            console.log("Body: " + body);
-            // response.writeHead(200);
-            // response.write(body);
-        }
-        // response.end();
+        // url: "http://tw.yahoo.com/"
+        url: "http://pol.is/api/v3/conversations"
+    });
+    request.on('data', function(chunk) {
+        body.push(chunk);
+    }).on('end', function() {
+        body = Buffer.concat(body).toString();
+        response.writeHead(200, {"Content-Type": "text/html"});
+        response.write(body);
+        response.end();
+    }).on('response', function(res) {
+        // console.log("Response " + res.statusCode);
+    }).on('error', function (err) {
+        console.log("Error\n" + err);
+        response.writeHead(200, {"Content-Type": "text/html"});
+        response.write(err.toString());
+        response.end();
     });
 }
