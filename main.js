@@ -86,21 +86,28 @@ function saveAccessToken(token, response) {
             proxy: process.env.HTTP_PROXY,
             method: "GET",
             headers: {
-                "Authorization": "Bearer " + token,
+                "Authorization": "Bearer " + token
             },
-            url: "http://hostname/"
+//	     url: "http://hostname/"
+            url: "http://hostname/api/v3/conversations?polisApiKey=pkey_fhd7wkT3s9e8tw56J3H32dFa7s9"
+	// uri: "http://hostname/m/5kssnrx6mc
             // url: "http://hostname/api/v3/conversations"
             // url: "http://tw.yahoo.com/"
         }
     ).on('response', function (resp) {
-        // console.log("resp=" + resp);
-        // for (var key in resp) {
-        //     if (typeof  resp[key] !== "function") {
-        //         console.log(key + ": " + resp[key]);
-        //     }
-        // }
+        console.log("resp=" + resp);
+        for (var key in resp) {
+             if (typeof  resp[key] !== "function") {
+                 console.log(key + ": " + resp[key]);
+             }
+         }
     }).on('error', function (err) {
-        // console.log("error=" + err);
+        console.log("error=" + err);
+         for (var key in err) {
+             if (typeof  err[key] !== "function") {
+                 console.log(key + ": " + err[key]);
+             }
+         }
         response.writeHead(200, {"Content-Type": "text/html"});
         // response.writeHead(500, {"Content-Type": "text/html"});
         response.write("Error:<br>" + err);

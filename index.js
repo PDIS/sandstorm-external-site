@@ -1,5 +1,7 @@
 const KEY = 'EA5QAQEAABEBF1EEAQH/x80lxnnjecgAQAMxCSIBAAH/aHR0cHM6Ly8DcG9sLmlzL2FwaS92My9jb252ZXJzYXRpB29ucw==';
 
+function open() {
+
 window.parent.postMessage({
     powerboxRequest: {
         rpcId: 1,
@@ -44,9 +46,12 @@ window.addEventListener("message", function (event) {
 });
 
 function doClaimToken(token) {
-    $('html').load('/claimToken',
+    $('#message').load('/claimToken',
         {"requestToken": token, "requiredPermissions": ["read"]},
         function (response) {},
         "x-www-form-urlencoded"
     );
 }
+}
+
+open();
