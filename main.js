@@ -6,42 +6,22 @@ var http = require("http"),
     qs = require('querystring'),
     port = 8000;
 
+var gToken;
+
 http.createServer(function (request, response) {
+  console.log(request.method + " " + request.url);
 
-    console.log(request.method + " " + request.url);
-
-    if (request.url === '/claimToken') {
-        claimToken(request, response);
-        return;
-    }
-
-    var uri = url.parse(request.url).pathname
-        , filename = path.join(process.cwd(), uri);
-
-    fs.exists(filename, function (exists) {
-        if (!exists) {
-            console.log("File not found");
-            response.writeHead(404, {"Content-Type": "text/plain"});
-            response.write("404 Not Found\n");
-            response.end();
-            return;
-        }
-
-        if (fs.statSync(filename).isDirectory()) filename += '/index.html';
-
-        fs.readFile(filename, "binary", function (err, file) {
-            if (err) {
-                response.writeHead(500, {"Content-Type": "text/plain"});
-                response.write(err + "\n");
-                response.end();
-                return;
-            }
-
-            response.writeHead(200);
-            response.write(file, "binary");
-            response.end();
-        });
-    });
+  if (request.url === '/claimToken') {
+    claimToken(request, response);
+    return;
+  }
+  if (request.url === '/' 
+	|| request.url === '/polis_ss_index.js'
+	|| request.url === '/lib/jquery-3.1.1.min.js') {
+    sendLocalFile(request, response);
+    return;
+  }
+  pipe(request.method, request.url, response);
 }).listen(port);
 
 console.log("Server running.");
@@ -81,29 +61,27 @@ function claimToken(request, response) {
 }
 
 function saveAccessToken(token, response) {
+    gToken = token;
     var body = [];
     doRequest({
             proxy: process.env.HTTP_PROXY,
             method: "GET",
             headers: {
                 "Authorization": "Bearer " + token,
-		"Content-Type": "text/html"
             },
-	      url: "http://pol.is/"
+	      url: "http://pol.is/2rieydnb3k"
 //            url: "http://pol.is/api/v3/conversations?polisApiKey=pkey_fhd7wkT3s9e8tw56J3H32dFa7s9"
 //	    uri: "http://pol.is/m/5kssnrx6mc?polisApiKey=pkey_fhd7wkT3s9e8tw56J3H32dFa7s9"
             // url: "http://hostname/api/v3/conversations"
-            // url: "http://tw.yahoo.com/"
+//            url: "http://hostname/"
         }
     ).on('response', function (resp) {
-        console.log("resp=" + resp);
-        for (var key in resp) {
+/*        for (var key in resp) {
              if (typeof  resp[key] !== "function") {
                  console.log(key + ": " + resp[key]);
              }
-         }
+         }*/
     }).on('error', function (err) {
-        console.log("error=" + err);
          for (var key in err) {
              if (typeof  err[key] !== "function") {
                  console.log(key + ": " + err[key]);
@@ -121,5 +99,71 @@ function saveAccessToken(token, response) {
         response.writeHead(200, {"Content-Type": "text/html"});
         response.write(body);
         response.end();
+    });
+}
+
+function pipe(method, url, response) {
+    var body = [];
+    var contentType = "text/html";
+    doRequest({
+            proxy: process.env.HTTP_PROXY,
+            method: method,
+            headers: {
+                "Authorization": "Bearer " + gToken,
+            },
+            url: "http://hostname" + url
+	 }
+    ).on('response', function (resp) {
+	console.log("Responded " + resp.statusCode);
+	contentType = resp.headers['content-type'];
+	console.log(contentType);
+    }).on('error', function (err) {
+         for (var key in err) {
+             if (typeof  err[key] !== "function") {
+                 console.log(key + ": " + err[key]);
+             }
+         }
+        response.writeHead(200, {"Content-Type": contentType});
+        // response.writeHead(500, {"Content-Type": "text/html"});
+        response.write("Error:<br>" + err);
+        response.end();
+    }).on('data', function (chunk) {
+        body.push(chunk);
+    }).on('end', function () {
+        body = Buffer.concat(body).toString();
+        // console.log("Body: " + body);
+        response.writeHead(200);
+        response.write(body);
+        response.end();
+    });
+}
+
+function sendLocalFile(request, response) {
+    var uri = url.parse(request.url).pathname
+        , filename = path.join(process.cwd(), uri);
+
+    fs.exists(filename, function (exists) {
+        if (!exists) {
+            console.log("File not found");
+            response.writeHead(404, {"Content-Type": "text/plain"});
+            response.write("404 Not Found\n");
+            response.end();
+            return;
+        }
+
+        if (fs.statSync(filename).isDirectory()) filename += '/polis_ss_index.html';
+
+        fs.readFile(filename, "binary", function (err, file) {
+            if (err) {
+                response.writeHead(500, {"Content-Type": "text/plain"});
+                response.write(err + "\n");
+                response.end();
+                return;
+            }
+
+            response.writeHead(200);
+            response.write(file, "binary");
+            response.end();
+        });
     });
 }
