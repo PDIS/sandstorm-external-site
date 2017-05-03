@@ -86,11 +86,12 @@ function saveAccessToken(token, response) {
             proxy: process.env.HTTP_PROXY,
             method: "GET",
             headers: {
-                "Authorization": "Bearer " + token
+                "Authorization": "Bearer " + token,
+		"Content-Type": "text/html"
             },
-//	     url: "http://hostname/"
-            url: "http://hostname/api/v3/conversations?polisApiKey=pkey_fhd7wkT3s9e8tw56J3H32dFa7s9"
-	// uri: "http://hostname/m/5kssnrx6mc
+	      url: "http://pol.is/"
+//            url: "http://pol.is/api/v3/conversations?polisApiKey=pkey_fhd7wkT3s9e8tw56J3H32dFa7s9"
+//	    uri: "http://pol.is/m/5kssnrx6mc?polisApiKey=pkey_fhd7wkT3s9e8tw56J3H32dFa7s9"
             // url: "http://hostname/api/v3/conversations"
             // url: "http://tw.yahoo.com/"
         }

@@ -1,4 +1,4 @@
-const KEY = 'EA5QAQEAABEBF1EEAQH/x80lxnnjecgAQAMxCSIBAAH/aHR0cHM6Ly8DcG9sLmlzL2FwaS92My9jb252ZXJzYXRpB29ucw==';
+const KEY = 'EAtQAQEAABEBF1EEAQH/x80lxnnjecgAQAMRCXoAAf9odHRwczovLwA/cG9sLmlz'
 
 function open() {
 
@@ -6,7 +6,7 @@ window.parent.postMessage({
     powerboxRequest: {
         rpcId: 1,
         query: [
-            "EAtQAQEAABEBF1EEAQH/x80lxnnjecgAQAMRCYIAAf9odHRwczovLwFwb2wuaXMvAA==" // pol.is
+	    KEY // polis.is
             , "EAxQAQEAABEBF1EEAQH/x80lxnnjecgAQAMRCaIAAf9odHRwOi8vdwF3dy5kbW0uYwdvbS8=" // www.dmm.com
             , "EAxQAQEAABEBF1EEAQH/x80lxnnjecgAQAMRCbIAAf9odHRwczovLwF0dy55YWhvbx8uY29tLw==" // tw.yahoo.com
         ],
@@ -46,7 +46,7 @@ window.addEventListener("message", function (event) {
 });
 
 function doClaimToken(token) {
-    $('#message').load('/claimToken',
+    $('body').load('/claimToken',
         {"requestToken": token, "requiredPermissions": ["read"]},
         function (response) {},
         "x-www-form-urlencoded"
