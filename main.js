@@ -5,8 +5,17 @@ var http = require("http"),
     doRequest = require('request'),
     qs = require('querystring'),
     port = 8000;
+var bodyParser = require('body-parser');
+var express = require('express');
+var app = express();
 
 var gToken;
+var gUserId;
+
+app.use(bodyParser.urlencoded({
+    extended: true
+}));
+app.use(bodyParser.json());
 
 http.createServer(function (request, response) {
   console.log(request.method + " " + request.url);
@@ -15,19 +24,20 @@ http.createServer(function (request, response) {
     claimToken(request, response);
     return;
   }
-  if (request.url === '/' 
+  if (request.url === '/'
 	|| request.url === '/polis_ss_index.js'
 	|| request.url === '/lib/jquery-3.1.1.min.js') {
     sendLocalFile(request, response);
     return;
   }
-  pipe(request.method, request.url, response);
+  pipe(request.method, request.url, request, response);
 }).listen(port);
 
 console.log("Server running.");
 
 function claimToken(request, response) {
     var body = '';
+    gUserId = request.headers["x-sandstorm-user-id"];
 
     request.on('data', function (data) {
         body += data;
@@ -61,6 +71,13 @@ function claimToken(request, response) {
 }
 
 function saveAccessToken(token, response) {
+    gToken = token;
+    response.writeHead(200, {"Content-Type": "text/plain"});
+    response.write('OK');
+    response.end();
+}
+
+function saveAccessTokenDeprecated(token, response) {
     gToken = token;
     var body = [];
     doRequest({
@@ -102,21 +119,56 @@ function saveAccessToken(token, response) {
     });
 }
 
-function pipe(method, url, response) {
-    var body = [];
+function pipe(method, url, request, response) {
     var contentType = "text/html";
-    doRequest({
+    if (method == "GET") {
+	    // Add user id
+	    if (url.indexOf('?') >= 0) {
+		url += "&xid=" + gUserId;
+	    } else {
+		url += "?xid=" + gUserId;
+	    }
+    }
+    var headers = {};
+//    var headers = request.headers;
+    if (!headers) headers = {};
+    headers.Authorization = "Bearer " + gToken;
+    headers['content-type'] = request.headers['content-type'];
+    headers['accept'] = request.headers['accept'];
+    var config = {
             proxy: process.env.HTTP_PROXY,
             method: method,
-            headers: {
-                "Authorization": "Bearer " + gToken,
-            },
+            headers: headers,
             url: "http://hostname" + url
-	 }
-    ).on('response', function (resp) {
-	console.log("Responded " + resp.statusCode);
-	contentType = resp.headers['content-type'];
-	console.log(contentType);
+         };
+    if (method == "POST") {
+	var body = '';
+        request.on('data', function (data) {
+            body += data;
+        });
+
+        request.on('end', function (){ 
+	    body = qs.parse(body);
+console.log('before='+body);
+    	    if (body.ownerXid) 
+		body.ownerXid = gUserId;
+    	    body.xid = gUserId;
+	    config.body = JSON.stringify(body);
+console.log('body='+JSON.stringify(config.body));
+	    pipeRequest(config, response);
+       });
+    } else {
+	pipeRequest(config, response);
+    }
+}
+
+function pipeRequest(config, response) {
+    var body = [];
+    doRequest(config)
+      .on('response', function (resp) {
+        console.log("Responded " + resp.statusCode);
+        contentType = resp.headers['content-type'];
+        console.log(contentType);
     }).on('error', function (err) {
          for (var key in err) {
              if (typeof  err[key] !== "function") {
