@@ -149,12 +149,10 @@ function pipe(method, url, request, response) {
 
         request.on('end', function (){ 
 	    body = qs.parse(body);
-console.log('before='+body);
-    	    if (body.ownerXid) 
+    	    if (body.ownerXid)
 		body.ownerXid = gUserId;
     	    body.xid = gUserId;
 	    config.body = JSON.stringify(body);
-console.log('body='+JSON.stringify(config.body));
 	    pipeRequest(config, response);
        });
     } else {

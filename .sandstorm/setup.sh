@@ -5,11 +5,9 @@
 
 set -euo pipefail
 
-apt update
-apt install -y nodejs
-apt install -y npm
+curl -sL https://deb.nodesource.com/setup_7.x | sudo -E bash -
+sudo apt-get install -y nodejs
 rm -f /usr/bin/node
 ln -s `which nodejs` /usr/bin/node
-npm install npm@latest -g
 cd /opt/app
-npm install request
+npm install
