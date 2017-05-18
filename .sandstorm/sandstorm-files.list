@@ -250,6 +250,15 @@ opt/app/node_modules/http-signature/lib/signer.js
 opt/app/node_modules/http-signature/lib/utils.js
 opt/app/node_modules/http-signature/lib/verify.js
 opt/app/node_modules/http-signature/package.json
+opt/app/node_modules/iconv-lite/encodings/dbcs-codec.js
+opt/app/node_modules/iconv-lite/encodings/dbcs-data.js
+opt/app/node_modules/iconv-lite/encodings/index.js
+opt/app/node_modules/iconv-lite/encodings/internal.js
+opt/app/node_modules/iconv-lite/encodings/sbcs-codec.js
+opt/app/node_modules/iconv-lite/encodings/sbcs-data-generated.js
+opt/app/node_modules/iconv-lite/encodings/sbcs-data.js
+opt/app/node_modules/iconv-lite/encodings/utf16.js
+opt/app/node_modules/iconv-lite/encodings/utf7.js
 opt/app/node_modules/iconv-lite/lib/bom-handling.js
 opt/app/node_modules/iconv-lite/lib/extend-node.js
 opt/app/node_modules/iconv-lite/lib/index.js
