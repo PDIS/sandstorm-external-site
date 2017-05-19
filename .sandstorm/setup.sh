@@ -10,4 +10,4 @@ sudo apt-get install -y nodejs
 rm -f /usr/bin/node
 ln -s `which nodejs` /usr/bin/node
 cd /opt/app
-npm install
+npm install --no-bin-links

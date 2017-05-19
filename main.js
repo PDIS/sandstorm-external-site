@@ -11,32 +11,53 @@ var app = express();
 var gToken;
 var gUserId;
 
+const conversationIdPath = '/tmp/conversation_id';
+const tokenPath = '/tmp/token';
+
 app.use(bodyParser.urlencoded({
     extended: true
 }));
 app.use(bodyParser.json());
 
-app.get('/', sendLocalFile);
+app.get('/', start);
 app.get(/^\/lib/, sendLocalFile);
 app.get('/polis_ss_index.js', sendLocalFile);
 app.post('/claimToken', claimToken);
-app.get('/open_polis_conversation', function (request, response) {
-    var conversationId = request.query.conversation_id;
-    console.log(conversationId);
-    response.send('/' + conversationId);
-});
+app.get('/open_polis_conversation', openConversation);
 app.all('*', pipe);
 
 app.listen(port, function () {
     console.log("Server running.");
 });
 
+function start(request, response) {
+    if (!fs.existsSync(tokenPath)) {
+        sendLocalFile(request, response);
+    } else {
+        fs.readFile(tokenPath, function (err, data) {
+            if (err) {
+                return console.log(err);
+            }
+            gToken = data;
+
+            fs.readFile(conversationIdPath, function (err, data) {
+                if (err) {
+                    return console.log(err);
+                }
+                response.redirect(getConversationPath(request, data));
+            });
+        });
+    }
+}
+
 function claimToken(request, response) {
-    console.log('Token claimed.');
     gUserId = request.headers["x-sandstorm-user-id"];
 
     var post = request.body;
     var claimToken = post.requestToken;
+    for (var key in request.headers) {
+        console.log(key + ': ' + request.headers[key]);
+    }
     var sessionId = request.headers["x-sandstorm-session-id"];
 
     doRequest({
@@ -58,6 +79,11 @@ function claimToken(request, response) {
 
 function saveAccessToken(token, response) {
     gToken = token;
+    fs.writeFile(tokenPath, token, function(err) {
+        if(err) {
+            return console.log(err);
+        }
+    });
     response.send('OK');
 }
 
@@ -65,8 +91,7 @@ function pipe(request, response) {
     var method = request.method;
     var url = request.url;
     console.log('pipe ' + method + ' ' + url);
-    var contentType = "text/html";
-    if (method == "GET") {
+    if (method === "GET") {
         // Add user id
         if (url.indexOf('?') >= 0) {
             url += "&xid=" + gUserId;
@@ -85,7 +110,7 @@ function pipe(request, response) {
         headers: headers,
         url: "http://hostname" + url
     };
-    if (method == "POST") {
+    if (method === "POST") {
         var body = request.body;
         if (body.ownerXid) {
             body.ownerXid = gUserId;
@@ -101,30 +126,32 @@ function pipe(request, response) {
 
 function pipeRequest(config, response) {
     var body = [];
+    var contentType;
     doRequest(config)
         .on('response', function (resp) {
-            console.log("Responded " + resp.statusCode);
+            // console.log("Responded " + resp.statusCode);
             contentType = resp.headers['content-type'];
-            console.log(contentType);
-        }).on('error', function (err) {
-        for (var key in err) {
-            if (typeof  err[key] !== "function") {
-                console.log(key + ": " + err[key]);
-            }
-        }
-        response.writeHead(200, {"Content-Type": contentType});
-        // response.writeHead(500, {"Content-Type": "text/html"});
-        response.write("Error:<br>" + err);
-        response.end();
-    }).on('data', function (chunk) {
-        body.push(chunk);
-    }).on('end', function () {
-        body = Buffer.concat(body).toString();
-        // console.log("Body: " + body);
-        response.writeHead(200);
-        response.write(body);
-        response.end();
-    });
+        })
+        .on('error', function (err) {
+            // for (var key in err) {
+            //     if (typeof  err[key] !== "function") {
+            //         console.log(key + ": " + err[key]);
+            //     }
+            // }
+            response.writeHead(500, {"Content-Type": contentType});
+            response.write("Error:<br>" + err);
+            response.end();
+        })
+        .on('data', function (chunk) {
+            body.push(chunk);
+        })
+        .on('end', function () {
+            body = Buffer.concat(body).toString();
+            // console.log("Body: " + body);
+            response.writeHead(200);
+            response.write(body);
+            response.end();
+        });
 }
 
 function sendLocalFile(request, response) {
@@ -155,4 +182,20 @@ function sendLocalFile(request, response) {
             response.end();
         });
     });
+}
+
+function openConversation(request, response) {
+    var conversationId = request.query.conversation_id;
+    fs.writeFile(conversationIdPath, conversationId, function(err) {
+        if(err) {
+            return console.log(err);
+        }
+    });
+    response.send(getConversationPath(request, conversationId));
+}
+
+function getConversationPath(request, conversationId) {
+    var permissions = request.headers['x-sandstorm-permissions'];
+    console.log('permissions='+permissions);
+    return '/m/' + conversationId;
 }

@@ -7,7 +7,6 @@ $().ready(function () {
 });
 
 function open() {
-
     window.parent.postMessage({
         powerboxRequest: {
             rpcId: 1, query: [
@@ -80,28 +79,27 @@ function doClaimToken(token) {
 }
 
 function createConversation() {
-    $.post('/api/v3/conversations',
-        {
-            "polisApiKey": "pkey_fhd7wkT3s9e8tw56J3H32dFa7s9",
-            "ownerXid": "handled by main.js"
-        },
-        {
-            headers: {
+    $.ajax({
+        method: 'POST',
+        url: '/api/v3/conversations',
+        headers: {
             "accept": "application/json",
             "content-type": "application/json"
-            }
         },
-        "application/json")
+        data: JSON.stringify({
+            "polisApiKey": "pkey_fhd7wkT3s9e8tw56J3H32dFa7s9",
+            "ownerXid": "handled by main.js"
+        }),
+        dataType: 'json'
+    })
         .done(function (resp) {
-        console.log('cp2: ' + resp);
-        var conversationId = JSON.parse(resp).conversation_id;
-        if (!conversationId) {
-            $('body').html(resp);
-            return;
-        }
-        openConversation(conversationId);
-        console.log('cp3');
-    });
+            var conversationId = resp.conversation_id;
+            if (!conversationId) {
+                $('body').html(resp);
+                return;
+            }
+            openConversation(conversationId);
+        });
 }
 
 function openConversation(conversationId) {

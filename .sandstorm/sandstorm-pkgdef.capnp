@@ -235,9 +235,9 @@ const pkgdef :Spk.PackageDefinition = (
    bridgeConfig = (
       powerboxApis = [
         (
-          name = "calendar-read",
+          name = "view",
           displayInfo = (
-            title = (defaultText = "Read-only access to calendar"),
+            title = (defaultText = "Regular viewer"),
           ),
           path = "/calendar",
           tag = (
@@ -246,9 +246,9 @@ const pkgdef :Spk.PackageDefinition = (
           permissions = [true, false],  # read, not write
         ),
         (
-          name = "calendar-modify",
+          name = "admin",
           displayInfo = (
-            title = (defaultText = "Full access to calendar"),
+            title = (defaultText = "Administrator"),
           ),
           path = "/calendar",
           tag = (
