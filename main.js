@@ -55,9 +55,6 @@ function claimToken(request, response) {
 
     var post = request.body;
     var claimToken = post.requestToken;
-    for (var key in request.headers) {
-        console.log(key + ': ' + request.headers[key]);
-    }
     var sessionId = request.headers["x-sandstorm-session-id"];
 
     doRequest({
@@ -196,6 +193,9 @@ function openConversation(request, response) {
 
 function getConversationPath(request, conversationId) {
     var permissions = request.headers['x-sandstorm-permissions'];
-    console.log('permissions='+permissions);
-    return '/m/' + conversationId;
+    if (permissions.indexOf('admin') >= 0) {
+        return '/m/' + conversationId;
+    } else {
+        return '/' + conversationId;
+    }
 }
