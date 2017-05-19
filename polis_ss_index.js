@@ -55,7 +55,6 @@ function doClaimToken(token) {
         method: 'POST',
         data: {"requestToken": token, "requiredPermissions": ["read"]},
         success: function () {
-            createConversation();
             // var mode = $('#mode').val();
             // var path = $('#path').val();
             // switch (mode) {
@@ -103,6 +102,9 @@ function createConversation() {
 }
 
 function openConversation(conversationId) {
+    if (!conversationId) {
+        conversationId = $('#cid').val();
+    }
     $.ajax('/open_polis_conversation?conversation_id=' + conversationId)
         .done(function (resp) {
             location.href = resp;
