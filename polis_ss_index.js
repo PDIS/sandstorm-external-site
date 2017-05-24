@@ -81,10 +81,6 @@ function createConversation() {
             "accept": "application/json",
             "content-type": "application/json"
         },
-        data: JSON.stringify({
-            "polisApiKey": "pkey_fhd7wkT3s9e8tw56J3H32dFa7s9",
-            "ownerXid": "handled by main.js"
-        }),
         dataType: 'json'
     })
         .done(function (resp) {
@@ -93,16 +89,22 @@ function createConversation() {
                 $('body').html(resp);
                 return;
             }
-            openConversation(conversationId);
+            openConversation(conversationId, true);
         });
 }
 
-function openConversation(conversationId) {
+function openConversation(conversationId, isOwner) {
     if (!conversationId) {
         conversationId = $('#cid').val();
     }
     $('body').html('Opening conversation...');
-    $.ajax('/open_polis_conversation?conversation_id=' + conversationId)
+    var requestUrl;
+    if (isOwner) {
+        requestUrl = '/open_polis_conversation?conversation_id=' + conversationId + '&owner=true';
+    } else {
+        requestUrl = '/open_polis_conversation?conversation_id=' + conversationId;
+    }
+    $.ajax(requestUrl)
         .done(function (resp) {
             location.href = resp;
         });
