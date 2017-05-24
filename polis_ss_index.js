@@ -6,7 +6,8 @@ function open() {
         powerboxRequest: {
             rpcId: 1, query: [
                 KEY,
-                "EAxQAQEAABEBF1EEAQH/x80lxnnjecgAQAMRCboAAf9odHRwczovLwFwcmVwcm9kLj9wb2wuaXM=" // prepod.polis.is
+                "EAxQAQEAABEBF1EEAQH/x80lxnnjecgAQAMRCboAAf9odHRwczovLwFwcmVwcm9kLj9wb2wuaXM=", // prepod.polis.is
+                "EA1QAQEAABEBF1EEAQH/x80lxnnjecgAQAMRCfIAAf9odHRwOi8vMQIwNC4xOTkuMTQ0LjIwOS54H2lwLmlvn" // 104.xip
             ], saveLabel: {defaultText: "your calendar, for adding events"},
         }
     }, "*");
@@ -89,21 +90,17 @@ function createConversation() {
                 $('body').html(resp);
                 return;
             }
-            openConversation(conversationId, true);
+            openConversation(conversationId);
         });
 }
 
-function openConversation(conversationId, isOwner) {
+function openConversation(conversationId) {
     if (!conversationId) {
         conversationId = $('#cid').val();
     }
     $('body').html('Opening conversation...');
     var requestUrl;
-    if (isOwner) {
-        requestUrl = '/open_polis_conversation?conversation_id=' + conversationId + '&owner=true';
-    } else {
-        requestUrl = '/open_polis_conversation?conversation_id=' + conversationId;
-    }
+    requestUrl = '/open_polis_conversation?conversation_id=' + conversationId;
     $.ajax(requestUrl)
         .done(function (resp) {
             location.href = resp;
