@@ -10,8 +10,10 @@ var app = express();
 
 var gToken;
 var gUserId;
+var gOwnerId;
 
 const conversationIdPath = '/var/conversation_id';
+const ownerIdPath = '/var/owner_id';
 const tokenPath = '/var/token';
 
 app.use(bodyParser.urlencoded({
@@ -46,6 +48,13 @@ function start(request, response) {
                 }
                 response.redirect(getConversationPath(request, data));
             });
+            
+            if (fs.existsSync(ownerIdPath)) {
+                fs.readFile(ownerIdPath, function (err,data) {
+                    if (err) return console.log(err);
+                    gOwnerId = data;
+                }
+            }
         });
     }
 }
@@ -101,6 +110,9 @@ function pipe(request, response) {
     headers.Authorization = "Bearer " + gToken;
     headers['content-type'] = request.headers['content-type'];
     headers['accept'] = request.headers['accept'];
+    headers['x-sandstorm-app-polis-apikey'] = 'pkey_fhd7wkT3s9e8tw56J3H32dFa7s9';
+    headers['x-sandstorm-app-polis-xid'] = gUserId;
+    headers['x-sandstorm-app-polis-owner-xid'] = gOwnerId;
     var config = {
         proxy: process.env.HTTP_PROXY,
         method: method,
@@ -183,11 +195,20 @@ function sendLocalFile(request, response) {
 
 function openConversation(request, response) {
     var conversationId = request.query.conversation_id;
+    var isOwner = request.query.isowner;
     fs.writeFile(conversationIdPath, conversationId, function(err) {
         if(err) {
             return console.log(err);
         }
     });
+    if (isOwner && !fs.existsSync(ownerIdPath)) {
+        gOwnerId = gUserId;
+        fs.writeFile(ownerIdPath, gUserId, function(err) {
+             if(err) {
+                  return console.log(err);
+             }
+        });
+    } 
     response.send(getConversationPath(request, conversationId));
 }
 
@@ -199,3 +220,4 @@ function getConversationPath(request, conversationId) {
         return '/' + conversationId;
     }
 }
+
