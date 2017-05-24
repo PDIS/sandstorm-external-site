@@ -1,11 +1,6 @@
 const KEY =
     'EAtQAQEAABEBF1EEAQH/x80lxnnjecgAQAMRCXoAAf9odHRwczovLwA/cG9sLmlz'
 
-
-$().ready(function () {
-//	$('#open').on('click', open);
-});
-
 function open() {
     window.parent.postMessage({
         powerboxRequest: {
@@ -78,6 +73,7 @@ function doClaimToken(token) {
 }
 
 function createConversation() {
+    $('body').html('Creating conversation...');
     $.ajax({
         method: 'POST',
         url: '/api/v3/conversations',
@@ -105,6 +101,7 @@ function openConversation(conversationId) {
     if (!conversationId) {
         conversationId = $('#cid').val();
     }
+    $('body').html('Opening conversation...');
     $.ajax('/open_polis_conversation?conversation_id=' + conversationId)
         .done(function (resp) {
             location.href = resp;

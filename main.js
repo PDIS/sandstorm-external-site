@@ -11,8 +11,8 @@ var app = express();
 var gToken;
 var gUserId;
 
-const conversationIdPath = '/tmp/conversation_id';
-const tokenPath = '/tmp/token';
+const conversationIdPath = '/var/conversation_id';
+const tokenPath = '/var/token';
 
 app.use(bodyParser.urlencoded({
     extended: true
