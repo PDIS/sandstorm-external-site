@@ -10,11 +10,9 @@ var app = express();
 
 var gToken;
 var gUserId;
-var gOwnerId;
 
 var API_KEY = 'pkey_fhd7wkT3s9e8tw56J3H32dFa7s9';
 const conversationIdPath = '/var/conversation_id';
-const ownerIdPath = '/var/owner_id';
 const tokenPath = '/var/token';
 
 app.use(bodyParser.urlencoded({
@@ -42,6 +40,7 @@ function start(request, response) {
                 return console.log(err);
             }
             gToken = data;
+            gUserId = request.headers["x-sandstorm-user-id"];
 
             fs.readFile(conversationIdPath, function (err, data) {
                 if (err) {
@@ -49,27 +48,12 @@ function start(request, response) {
                 }
                 response.redirect(getConversationPath(request, data));
             });
-            
-            if (fs.existsSync(ownerIdPath)) {
-                fs.readFile(ownerIdPath, function (err,data) {
-                    if (err) return console.log(err);
-                    gOwnerId = data;
-                });
-            }
         });
     }
 }
 
 function claimToken(request, response) {
     gUserId = request.headers["x-sandstorm-user-id"];
-    if (!fs.existsSync(ownerIdPath)) {
-        gOwnerId = gUserId;
-        fs.writeFile(ownerIdPath, gUserId, function(err) {
-             if(err) {
-                  return console.log(err);
-             }
-        });
-    }
 
     var post = request.body;
     var claimToken = post.requestToken;
@@ -105,22 +89,19 @@ function saveAccessToken(token, response) {
 function pipe(request, response) {
     var method = request.method;
     var url = request.url;
-    console.log('pipe ' + method + ' ' + url);
+//    console.log('pipe ' + method + ' ' + url);
     if (method === "GET") {
         // Add user id
         if (url.indexOf('?') >= 0) {
-            url += "&xid=" + gUserId;
+            url += "&xid=" + gUserId + '&polisApiKey=' + API_KEY;
         } else {
-            url += "?xid=" + gUserId;
+            url += "?xid=" + gUserId + '&polisApiKey=' + API_KEY;
         }
     }
     var headers = {};
     headers.Authorization = "Bearer " + gToken;
     headers['content-type'] = request.headers['content-type'];
     headers['accept'] = request.headers['accept'];
-    headers['X-Sandstorm-App-polis-apikey'] = API_KEY;
-    headers['X-Sandstorm-app-polis-xid'] = gUserId;
-    headers['x-sandstorm-app-polis-owner-xid'] = gOwnerId;
     var config = {
         proxy: process.env.HTTP_PROXY,
         method: method,
@@ -143,12 +124,16 @@ function pipe(request, response) {
 }
 
 function pipeRequest(config, response) {
+    console.log('pipe ' + config.method + ' ' + config.url);
     var body = [];
     var contentType;
     doRequest(config)
         .on('response', function (resp) {
             // console.log("Responded " + resp.statusCode);
             contentType = resp.headers['content-type'];
+            for (var key in resp.headers) {
+                response.set(key, resp.headers[key]);
+            }
         })
         .on('error', function (err) {
             // for (var key in err) {
@@ -166,7 +151,7 @@ function pipeRequest(config, response) {
         .on('end', function () {
             body = Buffer.concat(body).toString();
             // console.log("Body: " + body);
-            response.writeHead(200);
+//            response.writeHead(200);
             response.write(body);
             response.end();
         });

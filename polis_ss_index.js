@@ -51,24 +51,7 @@ function doClaimToken(token) {
         method: 'POST',
         data: {"requestToken": token, "requiredPermissions": ["read"]},
         success: function () {
-            // var mode = $('#mode').val();
-            // var path = $('#path').val();
-            // switch (mode) {
-            //     case "redirect":
-            //         location.href = path;
-            //         break;
-            //     case "get":
-            //         $('#response').load(path);
-            //         break;
-            //     case "post":
-            //         $.ajax(path, {
-            //             method: mode,
-            //             data: $('#data').val()
-            //         }).done(function (resp) {
-            //             $('#response').html(resp);
-            //         });
-            //         break;
-            // }
+            createConversation();
         }
     });
 }
