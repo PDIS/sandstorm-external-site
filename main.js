@@ -23,6 +23,7 @@ app.use(bodyParser.json());
 app.get('/', start);
 app.get(/^\/lib/, sendLocalFile);
 app.get('/polis_ss_index.js', sendLocalFile);
+app.get('/polis_require_login.html', sendLocalFile);
 app.post('/claimToken', claimToken);
 app.get('/open_polis_conversation', openConversation);
 app.all('*', pipe);
@@ -41,6 +42,11 @@ function start(request, response) {
             }
             gToken = data;
             gUserId = request.headers["x-sandstorm-user-id"];
+            if (typeof gUserId === 'undefined') {
+                // Anonymous user
+                response.redirect('/polis_require_login.html');
+                return;
+            }
 
             fs.readFile(conversationIdPath, function (err, data) {
                 if (err) {
@@ -90,7 +96,7 @@ function pipe(request, response) {
     var method = request.method;
     var url = request.url;
 //    console.log('pipe ' + method + ' ' + url);
-    if (method === "GET") {
+    if (method === "GET" || method === "DELETE") {
         // Add user id
         if (url.indexOf('?') >= 0) {
             url += "&xid=" + gUserId + '&polisApiKey=' + API_KEY;
@@ -108,7 +114,7 @@ function pipe(request, response) {
         headers: headers,
         url: "http://hostname" + url
     };
-    if (method === "POST") {
+    if (method === "POST" || method === "PUT") {
         var body = request.body;
         body.polisApiKey = API_KEY;
         if (request.url == '/api/v3/conversations') {
@@ -127,34 +133,7 @@ function pipeRequest(config, response) {
     console.log('pipe ' + config.method + ' ' + config.url);
     var body = [];
     var contentType;
-    doRequest(config)
-        .on('response', function (resp) {
-            // console.log("Responded " + resp.statusCode);
-            contentType = resp.headers['content-type'];
-            for (var key in resp.headers) {
-                response.set(key, resp.headers[key]);
-            }
-        })
-        .on('error', function (err) {
-            // for (var key in err) {
-            //     if (typeof  err[key] !== "function") {
-            //         console.log(key + ": " + err[key]);
-            //     }
-            // }
-            response.writeHead(500, {"Content-Type": contentType});
-            response.write("Error:<br>" + err);
-            response.end();
-        })
-        .on('data', function (chunk) {
-            body.push(chunk);
-        })
-        .on('end', function () {
-            body = Buffer.concat(body).toString();
-            // console.log("Body: " + body);
-//            response.writeHead(200);
-            response.write(body);
-            response.end();
-        });
+    doRequest(config).pipe(response);
 }
 
 function sendLocalFile(request, response) {

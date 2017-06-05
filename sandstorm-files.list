@@ -424,6 +424,7 @@ node_modules/vary/index.js
 node_modules/vary/package.json
 node_modules/verror/lib/verror.js
 node_modules/verror/package.json
+polis_require_login.html
 polis_ss_index.html
 polis_ss_index.js
 proc/cpuinfo
