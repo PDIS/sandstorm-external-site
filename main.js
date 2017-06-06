@@ -122,6 +122,7 @@ function pipe(request, response) {
         } else {
             body.xid = gUserId;
         }
+        body.agid = 1;
         config.body = JSON.stringify(body);
         pipeRequest(config, response);
     } else {
