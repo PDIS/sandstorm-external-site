@@ -10,9 +10,11 @@ var app = express();
 
 var gToken;
 var gUserId;
+var gAdminKey = null;
 
 var API_KEY = 'pkey_fhd7wkT3s9e8tw56J3H32dFa7s9';
 const conversationIdPath = '/var/conversation_id';
+const adminKeyPath = '/var/admin_key';
 const tokenPath = '/var/token';
 
 app.use(bodyParser.urlencoded({
@@ -103,6 +105,9 @@ function pipe(request, response) {
         } else {
             url += "?xid=" + gUserId + '&polisApiKey=' + API_KEY;
         }
+        if (gAdminKey) {      
+            url += '&adminKey=' + gAdminKey;
+        }
     }
     var headers = {};
     headers.Authorization = "Bearer " + gToken;
@@ -121,6 +126,9 @@ function pipe(request, response) {
             body.ownerXid = gUserId;
         } else {
             body.xid = gUserId;
+        }
+        if (gAdminKey) {
+            body.adminKey = gAdminKey;
         }
         body.agid = 1;
         config.body = JSON.stringify(body);
@@ -169,7 +177,17 @@ function sendLocalFile(request, response) {
 
 function openConversation(request, response) {
     var conversationId = request.query.conversation_id;
-    var isOwner = request.query.isowner;
+    var adminKey = request.query.admin_key;
+    if (adminKey) {
+        if (!fs.existsSync(adminKeyPath)) {
+            gAdminKey = adminKey;
+            fs.writeFile(adminKeyPath, adminKey, function(err) {
+                 if(err) {
+                         return console.log(err);
+                        }
+                 });
+        }
+    }
     fs.writeFile(conversationIdPath, conversationId, function(err) {
         if(err) {
             return console.log(err);
@@ -181,6 +199,13 @@ function openConversation(request, response) {
 function getConversationPath(request, conversationId) {
     var permissions = request.headers['x-sandstorm-permissions'];
     if (permissions.indexOf('admin') >= 0) {
+        fs.readFile(adminKeyPath, function (err, data) {
+            if (err) {
+                return console.log(err);
+            }
+            gAdminKey = data;
+            console.log('Read admin key as ' + gAdminKey);
+        }
         return '/m/' + conversationId;
     } else {
         return '/' + conversationId;
