@@ -69,19 +69,19 @@ function createConversation() {
     })
         .done(function (resp) {
             var conversationId = resp.conversation_id;
-            var adminKey = resp.admin_key;
+//            var adminKey = resp.admin_key;
             if (!conversationId) {
                 $('body').html(resp);
                 return;
             }
-            openConversation(conversationId, adminKey);
+            openConversation(conversationId/*, adminKey*/);
         });
 }
 
-function openConversation(conversationId, adminKey) {
+function openConversation(conversationId/*, adminKey*/) {
     $('body').html('Opening conversation...');
     var requestUrl;
-    requestUrl = '/open_polis_conversation?conversation_id=' + conversationId + '&admin_key=' + adminKey;
+    requestUrl = '/open_polis_conversation?conversation_id=' + conversationId; // + '&admin_key=' + adminKey;
     $.ajax(requestUrl)
         .done(function (resp) {
             location.href = resp;

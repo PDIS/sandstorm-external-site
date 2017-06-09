@@ -73,7 +73,7 @@ const pkgdef :Spk.PackageDefinition = (
       author = (
         # Fields relating to the author of this app.
 
-        contactEmail = "youremail@example.com",
+        contactEmail = "romulus@ey.gov.tw",
         # Email address to contact for any issues with this app. This includes end-user support
         # requests as well as app store administrator requests, so it is very important that this be a
         # valid address with someone paying attention to it.
@@ -92,7 +92,7 @@ const pkgdef :Spk.PackageDefinition = (
         # Further details including how to set up GPG and how to use keybase.io can be found
         # at https://docs.sandstorm.io/en/latest/developing/publishing-apps/#verify-your-identity
 
-        upstreamAuthor = "Example App Team",
+#        upstreamAuthor = "",
         # Name of the original primary author of this app, if it is different from the person who
         # produced the Sandstorm package. Setting this implies that the author connected to the PGP
         # signature only "packaged" the app for Sandstorm, rather than developing the app.
@@ -201,22 +201,22 @@ const pkgdef :Spk.PackageDefinition = (
       roles = [
         # Roles are logical collections of permissions.  For instance, your app may have
         # a "viewer" role and an "editor" role
-        (
-          title = (defaultText = "editor"),
+#        (
+#          title = (defaultText = "editor"),
           # Name of the role.  Shown in the Sandstorm UI to indicate which users have which roles.
 
-          permissions  = [true],
+ #         permissions  = [true],
           # An array indicating which permissions this role carries.
           # It should be the same length as the permissions array in
           # viewInfo, and the order of the lists must match.
 
-          verbPhrase = (defaultText = "admin"),
+  #        verbPhrase = (defaultText = "admin"),
           # Brief explanatory text to show in the sharing UI indicating
           # what a user assigned this role will be able to do with the grain.
 
-          description = (defaultText = "editors may view all site data and change settings."),
+   #       description = (defaultText = "editors may view all site data and change settings."),
           # Prose describing what this role means, suitable for a tool tip or similar help text.
-        ),
+    #    ),
         (
           title = (defaultText = "viewer"),
           permissions  = [false],
