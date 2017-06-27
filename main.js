@@ -4,6 +4,7 @@ var http = require("http"),
     fs = require("fs"),
     doRequest = require('request'),
     port = 8000;
+var concat = require('concat-stream');
 var express = require('express');
 var bodyParser = require('body-parser');
 var app = express();
@@ -132,17 +133,29 @@ function pipe(request, response) {
         }*/
         body.agid = 1;
         config.body = JSON.stringify(body);
-        pipeRequest(config, response);
+        pipeRequest(config, request, response);
     } else {
-        pipeRequest(config, response);
+        pipeRequest(config, request, response);
     }
 }
 
-function pipeRequest(config, response) {
+function pipeRequest(config, request, response) {
     console.log('pipe ' + config.method + ' ' + config.url);
-    var body = [];
-    var contentType;
-    doRequest(config).pipe(response);
+    if (config.url.indexOf('/api/v3/participationInit') >= 0) {
+        var write = concat(function(rawResponse) {
+            var modResponse = JSON.parse(rawResponse.toString());
+            console.log(request.headers);
+            modResponse['acceptLanguage'] = request.headers['accept-language'];
+            response.end(JSON.stringify(modResponse));
+        });
+        doRequest(config).on('response', function(resp){
+            gLang = resp.headers['Accept-Language']
+            console.log(resp.headers);
+            console.log('h='+gLang);
+        }).pipe(write);
+    } else {
+        doRequest(config).pipe(response);
+    }
 }
 
 function sendLocalFile(request, response) {

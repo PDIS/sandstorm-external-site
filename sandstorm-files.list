@@ -156,6 +156,8 @@ node_modules/co/index.js
 node_modules/co/package.json
 node_modules/combined-stream/lib/combined_stream.js
 node_modules/combined-stream/package.json
+node_modules/concat-stream/index.js
+node_modules/concat-stream/package.json
 node_modules/content-disposition/index.js
 node_modules/content-disposition/package.json
 node_modules/content-type/index.js
@@ -164,6 +166,8 @@ node_modules/cookie-signature/index.js
 node_modules/cookie-signature/package.json
 node_modules/cookie/index.js
 node_modules/cookie/package.json
+node_modules/core-util-is/lib/util.js
+node_modules/core-util-is/package.json
 node_modules/cryptiles/lib/index.js
 node_modules/cryptiles/package.json
 node_modules/debug/package.json
@@ -285,6 +289,8 @@ node_modules/ipaddr.js/lib/ipaddr.js
 node_modules/ipaddr.js/package.json
 node_modules/is-typedarray/index.js
 node_modules/is-typedarray/package.json
+node_modules/isarray/index.js
+node_modules/isarray/package.json
 node_modules/isstream/isstream.js
 node_modules/isstream/package.json
 node_modules/json-schema/lib/validate.js
@@ -326,6 +332,8 @@ node_modules/path-to-regexp/index.js
 node_modules/path-to-regexp/package.json
 node_modules/performance-now/lib/performance-now.js
 node_modules/performance-now/package.json
+node_modules/process-nextick-args/index.js
+node_modules/process-nextick-args/package.json
 node_modules/proxy-addr/index.js
 node_modules/proxy-addr/package.json
 node_modules/qs/lib/formats.js
@@ -338,6 +346,18 @@ node_modules/range-parser/index.js
 node_modules/range-parser/package.json
 node_modules/raw-body/index.js
 node_modules/raw-body/package.json
+node_modules/readable-stream/lib/_stream_duplex.js
+node_modules/readable-stream/lib/_stream_passthrough.js
+node_modules/readable-stream/lib/_stream_readable.js
+node_modules/readable-stream/lib/_stream_transform.js
+node_modules/readable-stream/lib/_stream_writable.js
+node_modules/readable-stream/lib/internal/streams/BufferList.js
+node_modules/readable-stream/lib/internal/streams/destroy.js
+node_modules/readable-stream/lib/internal/streams/stream.js
+node_modules/readable-stream/node_modules/safe-buffer/index.js
+node_modules/readable-stream/node_modules/safe-buffer/package.json
+node_modules/readable-stream/package.json
+node_modules/readable-stream/readable.js
 node_modules/request/index.js
 node_modules/request/lib/auth.js
 node_modules/request/lib/cookies.js
@@ -412,6 +432,8 @@ node_modules/type-is/index.js
 node_modules/type-is/package.json
 node_modules/unpipe/index.js
 node_modules/unpipe/package.json
+node_modules/util-deprecate/node.js
+node_modules/util-deprecate/package.json
 node_modules/utils-merge/index.js
 node_modules/utils-merge/package.json
 node_modules/uuid/index.js
